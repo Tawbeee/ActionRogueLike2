@@ -6,17 +6,19 @@
 #include "GameFramework/Character.h"
 #include "SCharacter.generated.h"
 
-
-
+//class definitions :
 class UCameraComponent;
 class USpringArmComponent;
-
-
 
 UCLASS()
 class ACTIONROGUELIKE2_API ASCharacter : public ACharacter
 {
 	GENERATED_BODY()
+
+protected:
+
+	UPROPERTY(EditAnywhere);
+	TSubclassOf<AActor> ProjectileClass;
 
 public:
 	// Sets default values for this character's properties
