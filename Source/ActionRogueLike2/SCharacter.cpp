@@ -5,7 +5,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-
+#include "SInteractionComponent.h"
 // Sets default values
 ASCharacter::ASCharacter()
 {
@@ -21,6 +21,8 @@ ASCharacter::ASCharacter()
 
 	CameraComp = CreateDefaultSubobject<UCameraComponent>("CameraComp");
 	CameraComp->SetupAttachment(SpringArmComp);
+
+	InteractionComp = CreateDefaultSubobject<USInteractionComponent>("InteractionComp");
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
@@ -81,16 +83,28 @@ void ASCharacter::Tick(float DeltaTime)
 void ASCharacter::PrimaryAttack()
 {
 
-	FVector HandLocation = GetMesh()->GetSocketLocation("FX_Whip_Tip_A");
+	PlayAnimMontage(AttackAnim);
+
+	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ASCharacter::PrimaryAttack_TimeElapsed, 0.2f);
+
+
+}
+
+void ASCharacter::PrimaryAttack_TimeElapsed()
+{
+
+	FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
 
 	FTransform SpawnTM = FTransform(GetControlRotation(), HandLocation);
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	
-
 
 	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
+
+	SpawnParams.Instigator = this;
+
 }
+
 
 
 
@@ -109,7 +123,18 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed, this, &ASCharacter::PrimaryAttack);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ASCharacter::Jump);
 
+	PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, this, &ASCharacter::PrimaryInteract);
 
 
+
+}
+
+
+void ASCharacter::PrimaryInteract()
+{
+	if (InteractionComp)  // Pas vrmt nécessaire mais on le fait qd mm au cas où la fonction d'interaction de base ne l'aurait pas fait
+	{ 
+		InteractionComp->PrimaryInteract();
+	}
 }
 

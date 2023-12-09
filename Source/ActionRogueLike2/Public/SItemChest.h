@@ -20,13 +20,17 @@ class ACTIONROGUELIKE2_API ASItemChest : public AActor, public ISGameplayInterfa
 public:	
 	// Sets default values for this actor's properties
 	ASItemChest();
+	
+	UPROPERTY(EditAnywhere)
+	float TargetPitch;
+	float TargetScale;
 
 protected:
 
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* BaseMesh;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UStaticMeshComponent* LidMesh;
 
 	// Called when the game starts or when spawned
